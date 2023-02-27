@@ -930,7 +930,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
     def _get_upper_bound(self):
         r"""Return an upper bound on the eigenvalues of the Laplacian."""
 
-        if self.lap_type == 'normalized':
+        if self.lap_type in ['normalized','random_walk']:
             return 2  # Equal iff the graph is bipartite.
         elif self.lap_type == 'combinatorial':
             bounds = []
