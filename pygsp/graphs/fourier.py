@@ -171,12 +171,20 @@ class FourierMixIn(object):
 
         # TODO: handle non-symmetric Laplacians. Test lap_type?
         if n_eigenvectors == self.n_vertices:
-            self._e, self._U = linalg.eigh(self.L.toarray(order='F'), overwrite_a=True)
+            if self.lap_type == 'random_walk':
+                self._e, self._U = linalg.eig(self.L.toarray(order='F'), overwrite_a=True)
+            else :
+                self._e, self._U = linalg.eigh(self.L.toarray(order='F'), overwrite_a=True)
         else:
-            # fast partial eigendecomposition of hermitian matrices
-            self._e, self._U = sparse.linalg.eigsh(self.L,
-                                                   n_eigenvectors,
-                                                   which='SM')
+            if self.lap_type == 'random_walk':
+                self._e, self._U = sparse.linalg.eigs(self.L,
+                                                      n_eigenvectors,
+                                                      which='SM')
+            else :
+                # fast partial eigendecomposition of hermitian matrices
+                self._e, self._U = sparse.linalg.eigsh(self.L,
+                                                       n_eigenvectors,
+                                                       which='SM')
         # Columns are eigenvectors. Sorted in ascending eigenvalue order.
 
         # Smallest eigenvalue should be zero: correct numerical errors.
