@@ -169,6 +169,8 @@ class TestCase(unittest.TestCase):
         np.testing.assert_allclose(G.L.toarray(), laplacian)
         G.compute_laplacian('normalized')
         np.testing.assert_allclose(G.L.toarray(), laplacian/4)
+        G.compute_laplacian('randow_walk')
+        np.testing.assert_allclose(G.L.toarray(), laplacian/4)
 
         G = graphs.Graph([
             [0, 6, 0, 1],
@@ -181,6 +183,8 @@ class TestCase(unittest.TestCase):
         np.testing.assert_allclose(G.L.toarray(), laplacian)
         G.compute_laplacian('normalized')
         np.testing.assert_allclose(G.L.toarray(), laplacian/4)
+        G.compute_laplacian('random_walk')
+        np.testing.assert_allclose(G.L.toarray(), laplacian/4)
 
         def test_combinatorial(G):
             np.testing.assert_equal(G.L.toarray(), G.L.T.toarray())
@@ -192,12 +196,18 @@ class TestCase(unittest.TestCase):
             np.testing.assert_equal(G.L.toarray(), G.L.T.toarray())
             np.testing.assert_equal(G.L.diagonal(), 1)
 
+        def test_random_walk(G):
+            np.testing.assert_equal(G.L.toarray(), G.L.T.toarray())
+            np.testing.assert_equal(G.L.diagonal(), 1)            
+
         G = graphs.ErdosRenyi(100, directed=False)
         self.assertFalse(G.is_directed())
         G.compute_laplacian(lap_type='combinatorial')
         test_combinatorial(G)
         G.compute_laplacian(lap_type='normalized')
         test_normalized(G)
+        G.compute_laplacian(lap_type='random_walk')
+        test_random_walk(G)
 
         G = graphs.ErdosRenyi(100, directed=True)
         self.assertTrue(G.is_directed())
@@ -205,6 +215,8 @@ class TestCase(unittest.TestCase):
         test_combinatorial(G)
         G.compute_laplacian(lap_type='normalized')
         test_normalized(G)
+        G.compute_laplacian(lap_type='random_walk')
+        test_random_walk(G)
 
     def test_estimate_lmax(self):
 
@@ -382,7 +394,7 @@ class TestCase(unittest.TestCase):
             self.assertEqual(graph.n_vertices, n_vertices)
             self.assertEqual(graph.n_edges, n_edges)
             self.assertEqual(graph.W.nnz, n_edges)
-            for laplacian in ['combinatorial', 'normalized']:
+            for laplacian in ['combinatorial', 'normalized','ramdom_walk']:
                 graph.compute_laplacian(laplacian)
                 self.assertEqual(graph.L.nnz, 0)
                 sources, targets, weights = graph.get_edge_list()
@@ -411,6 +423,7 @@ class TestCase(unittest.TestCase):
             G = graphs.Graph(adjacency)
             G.compute_laplacian('combinatorial')
             G.compute_laplacian('normalized')
+            G.compute_laplacian('random_walk')
             G.estimate_lmax()
             G.compute_fourier_basis()
             G.compute_differential_operator()

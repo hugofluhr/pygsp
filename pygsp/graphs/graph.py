@@ -534,7 +534,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
 
         Parameters
         ----------
-        lap_type : {'combinatorial', 'normalized', 'randowm_walk'}
+        lap_type : {'combinatorial', 'normalized', 'random_walk'}
             The kind of Laplacian to compute. Default is combinatorial.
 
         Examples
@@ -626,7 +626,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
             self.L = sparse.identity(self.n_vertices) - D * W * D
             self.L[disconnected, disconnected] = 0
             self.L.eliminate_zeros()
-        elif lap_type == 'randow_walk':
+        elif lap_type == 'random_walk':
             d = np.zeros(self.n_vertices)
             disconnected = (self.dw == 0)
             np.power(self.dw, -1, where=~disconnected, out=d)
