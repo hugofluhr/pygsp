@@ -28,7 +28,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
         The (weighted) adjacency matrix of size n_vertices by n_vertices that
         encodes the graph.
         The data is copied except if it is a sparse matrix in CSR format.
-    lap_type : {'combinatorial', 'normalized'}
+    lap_type : {'combinatorial', 'normalized', 'random_walk'}
         The kind of Laplacian to be computed by :meth:`compute_laplacian`.
     coords : array_like
         A matrix of size n_vertices by d that represents the coordinates of the
@@ -50,7 +50,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
         that there is no direct connection.
     L : :class:`scipy.sparse.csr_matrix`
         The graph Laplacian, an N-by-N matrix computed from W.
-    lap_type : 'normalized', 'combinatorial'
+    lap_type : 'normalized', 'combinatorial', 'random_walk'
         The kind of Laplacian that was computed by :func:`compute_laplacian`.
     signals : dict (string -> :class:`numpy.ndarray`)
         Signals attached to the graph.
@@ -534,7 +534,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
 
         Parameters
         ----------
-        lap_type : {'combinatorial', 'normalized'}
+        lap_type : {'combinatorial', 'normalized', 'randowm_walk'}
             The kind of Laplacian to compute. Default is combinatorial.
 
         Examples
@@ -624,6 +624,14 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
             np.power(self.dw, -0.5, where=~disconnected, out=d)
             D = sparse.diags(d)
             self.L = sparse.identity(self.n_vertices) - D * W * D
+            self.L[disconnected, disconnected] = 0
+            self.L.eliminate_zeros()
+        elif lap_type == 'randow_walk':
+            d = np.zeros(self.n_vertices)
+            disconnected = (self.dw == 0)
+            np.power(self.dw, -1, where=~disconnected, out=d)
+            D = sparse.diags(d)
+            self.L = sparse.identity(self.n_vertices) - D * W
             self.L[disconnected, disconnected] = 0
             self.L.eliminate_zeros()
         else:
