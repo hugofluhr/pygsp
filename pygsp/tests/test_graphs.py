@@ -169,7 +169,7 @@ class TestCase(unittest.TestCase):
         np.testing.assert_allclose(G.L.toarray(), laplacian)
         G.compute_laplacian('normalized')
         np.testing.assert_allclose(G.L.toarray(), laplacian/4)
-        G.compute_laplacian('randow_walk')
+        G.compute_laplacian('random_walk')
         np.testing.assert_allclose(G.L.toarray(), laplacian/4)
 
         G = graphs.Graph([
@@ -197,7 +197,9 @@ class TestCase(unittest.TestCase):
             np.testing.assert_equal(G.L.diagonal(), 1)
 
         def test_random_walk(G):
-            np.testing.assert_equal(G.L.toarray(), G.L.T.toarray())
+            # the RW or Left-normalized Laplacian is not symmetric
+            #np.testing.assert_equal(G.L.sum(axis=0), 0)
+            np.testing.assert_allclose(G.L.sum(axis=1), 0, atol=1e-7)
             np.testing.assert_equal(G.L.diagonal(), 1)            
 
         G = graphs.ErdosRenyi(100, directed=False)
@@ -394,7 +396,7 @@ class TestCase(unittest.TestCase):
             self.assertEqual(graph.n_vertices, n_vertices)
             self.assertEqual(graph.n_edges, n_edges)
             self.assertEqual(graph.W.nnz, n_edges)
-            for laplacian in ['combinatorial', 'normalized','ramdom_walk']:
+            for laplacian in ['combinatorial', 'normalized','random_walk']:
                 graph.compute_laplacian(laplacian)
                 self.assertEqual(graph.L.nnz, 0)
                 sources, targets, weights = graph.get_edge_list()

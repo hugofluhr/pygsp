@@ -629,7 +629,7 @@ class Graph(FourierMixIn, DifferenceMixIn, IOMixIn, LayoutMixIn):
         elif lap_type == 'random_walk':
             d = np.zeros(self.n_vertices)
             disconnected = (self.dw == 0)
-            np.power(self.dw, -1, where=~disconnected, out=d)
+            np.power(self.dw, -1., where=~disconnected, out=d)
             D = sparse.diags(d)
             self.L = sparse.identity(self.n_vertices) - D * W
             self.L[disconnected, disconnected] = 0
